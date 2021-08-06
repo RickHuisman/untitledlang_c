@@ -43,6 +43,29 @@ Node newLetAssign(Identifier ident, Node expr) {
   return node;
 }
 
+Node newLetSet(Identifier ident, Node expr) {
+  LetSet let;
+  let.ident = ident;
+  let.expr = expr;
+
+  Node node;
+  node.type = NODE_LET_SET;
+  node.let_set = &let;
+
+  return node;
+}
+
+Node newLetGet(Identifier ident) {
+  LetGet let;
+  let.ident = ident;
+
+  Node node;
+  node.type = NODE_LET_GET;
+  node.let_get = &let;
+
+  return node;
+}
+
 Node newNumber(double value) {
   Node node;
   node.type = NODE_NUMBER;

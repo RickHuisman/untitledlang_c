@@ -68,6 +68,8 @@ static void consume(TokenType type, const char *message) {
   error(message);
 }
 
+static Identifier parseIdent();
+
 static Node expression();
 
 static Node declaration();
@@ -76,8 +78,6 @@ static Node number() {
   double value = strtod(parser.previous.start, NULL);
   return newNumber(value);
 }
-
-static Node expression();
 
 static ParseRule *getRule(TokenType type);
 
@@ -123,6 +123,18 @@ static Node binary(Node lhs) {
   return newBinary(lhs, op, rhs);
 }
 
+static Node identifier() {
+  Token source = parser.previous;
+  Identifier ident = newIdent(source.start, source.length);
+
+  if (match(TOKEN_EQUAL)) {
+    Node expr = expression();
+    return newLetSet(ident, expr);
+  }
+
+  return newLetGet(ident);
+}
+
 ParseRule rules[] = {
     // [TOKEN_LEFT_PAREN]    = {grouping, NULL,   PREC_NONE}, TODO Grouping
     [TOKEN_RIGHT_PAREN]   = {NULL, NULL, PREC_NONE},
@@ -143,7 +155,7 @@ ParseRule rules[] = {
     [TOKEN_GREATER_EQUAL] = {NULL, NULL, PREC_NONE},
     [TOKEN_LESS]          = {NULL, NULL, PREC_NONE},
     [TOKEN_LESS_EQUAL]    = {NULL, NULL, PREC_NONE},
-    [TOKEN_IDENTIFIER]    = {NULL, NULL, PREC_NONE},
+    [TOKEN_IDENTIFIER]    = {identifier, NULL, PREC_NONE},
     [TOKEN_NUMBER]        = {number, NULL, PREC_NONE},
     [TOKEN_ERROR]         = {NULL, NULL, PREC_NONE},
     [TOKEN_EOF]           = {NULL, NULL, PREC_NONE},
@@ -209,6 +221,12 @@ static Node block() {
   return node;
 }
 
+static Node expressionStatement() {
+  Node expr = expression();
+  consume(TOKEN_SEMICOLON, "Expect ';' after expression.");
+  return expr;
+}
+
 static Node declaration() {
   if (match(TOKEN_LET)) {
     return let_assign();
@@ -217,7 +235,7 @@ static Node declaration() {
     return block();
   }
 
-  // TODO: Expression statement
+  return expressionStatement();
 }
 
 Node parse(const char *source) {

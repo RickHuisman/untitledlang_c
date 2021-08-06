@@ -4,6 +4,8 @@
 typedef struct Node Node;
 typedef struct BinaryExpr BinaryExpr;
 typedef struct LetAssign LetAssign;
+typedef struct LetSet LetSet;
+typedef struct LetGet LetGet;
 
 typedef enum {
   UNARY_NEGATE,
@@ -20,6 +22,8 @@ typedef enum {
   NODE_UNARY,
   NODE_BINARY,
   NODE_LET_ASSIGN,
+  NODE_LET_SET,
+  NODE_LET_GET,
   NODE_BLOCK,
   NODE_NUMBER,
 } NodeType;
@@ -43,6 +47,12 @@ struct Node {
   // Let assign expr.
   LetAssign *let_assign;
 
+  // Let set expr.
+  LetSet *let_set;
+
+  // Let get expr.
+  LetGet *let_get;
+
   // Block expr.
   Node *body;
 
@@ -61,11 +71,22 @@ struct LetAssign {
   Node expr;
 };
 
+struct LetSet {
+  Identifier ident;
+  Node expr;
+};
+
+struct LetGet {
+  Identifier ident;
+};
+
 Node newUnary(UnaryOperator op, Node node);
 
 Node newBinary(Node lhs, BinaryOperator op, Node rhs);
 
 Node newLetAssign(Identifier ident, Node expr);
+Node newLetSet(Identifier ident, Node expr);
+Node newLetGet(Identifier ident);
 
 Node newNumber(double number);
 

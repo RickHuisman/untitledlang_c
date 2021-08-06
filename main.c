@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include "tokenizer.h"
 
 int main() {
-  printf("Hello, World!\n");
+  char* source = "let x = 10";
+
   return 0;
 }

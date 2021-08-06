@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <memory.h>
 #include "tokenizer.h"
 
 typedef struct Tokenizer {
